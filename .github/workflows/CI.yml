@@ -10,9 +10,14 @@ permissions:
   contents: read
  
 jobs:
-  listing:
+  linting:
     runs-on: ubuntu-24.04
     steps:
+      # Runer infos
+      - name: Runner infos
+        run: |
+          echo "Runner name : $RUNNER_NAME"
+          echo "Runner OS   : $RUNNER_OS"
       # Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,6 +35,11 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
+      # Runer infos
+      - name: Runner infos
+        run: |
+          echo "Runner name : $RUNNER_NAME"
+          echo "Runner OS   : $RUNNER_OS"
       # Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,7 +61,13 @@ jobs:
           pytest --maxfail=1 --disable-warnings -q 
   safetyScan:
     runs-on: ubuntu-24.04
+    needs: [test, linting]
     steps:
+      # Runer infos
+      - name: Runner infos
+        run: |
+          echo "Runner name : $RUNNER_NAME"
+          echo "Runner OS   : $RUNNER_OS"
       # Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
