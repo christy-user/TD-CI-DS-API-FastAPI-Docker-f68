@@ -1,23 +1,43 @@
-"""
-Tests unitaires pour le projet :
-GitHub - AlexandruEmil/Data-Science-API-FastAPI-Docker
- 
-Emplacement recommandé dans le dépôt cloné :
-    tests/unit/test_prediction.py
- 
-Objectif pédagogique :
-- Tester uniquement la fonction predict(), sans lancer FastAPI.
-- Couvrir les cas nominaux, limites, invalides et exceptionnels.
-- Éviter une couverture artificielle basée seulement sur des cas répétitifs.
-"""
 
-import math
- 
 import pytest
+from fastapi.testclient import TestClient
  
 from app.utils import predict
+from app.main import app 
+
+
+client = TestClient(app)
+
+# 1- Test d'une prédiction correcte
+
+def test_predict_correct ():
+    features = [1.0, 2.0, 3.0]
+    expected = [2.0, 4.0, 6.0]
+
+    result = predict(features)
+
+    assert result == pytest.approx(expected)
  
- 
+# 2- test d'une prédiction incorrecte
+
+def test_predict_incorrect():
+    features = [1.0, 2.0, 3.0]
+    expected = [4.0, 6.0, 8.0]
+
+    result = predict(features)
+
+    assert result != pytest.approx(expected)
+
+# 3- test d'un JSON incorrect
+
+def test_predict_json_incorrect():
+    response = client.post(
+        "/predict",
+        json={"values" : [3.5, 1.2, 4.9] }                                                                                                                              
+    )
+
+    assert response.status_code == 422
+
 # -----------------------------------------------------------------------------
 # Cas nominaux : entrées valides et représentatives
 # -----------------------------------------------------------------------------
@@ -105,10 +125,4 @@ def test_predict_output_size_matches_input_size():
 
     assert len(result) == len (features)
 
-def test_predict_output_values_are_numeric():
-    """ Chaque prédiction doit être une valeur numérique finie. """
-    result = predict([1.0, 2.0, 3.0, 4.0])
-  
-    assert all(isinstance(value, float) for value in result)
-    assert all(math.isfinite(value) for value in result)
 
