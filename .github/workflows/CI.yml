@@ -2,9 +2,9 @@ name: CI–FastAPI-F68
 
 on:
   pull_request:
-    branches: [main, dev]
+    branches: [main]
   push:
-    branches: [main, dev]
+    branches: [dev]
 
 permissions:
   contents: read
