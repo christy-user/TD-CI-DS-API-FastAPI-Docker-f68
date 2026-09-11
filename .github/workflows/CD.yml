@@ -1,8 +1,8 @@
-name: CD – FastAPI
+name: CD–FastAPI
 
 on:
   workflow_run:
-    workflows: ["CI – FastAPI"]
+    workflows: ["CI–FastAPI"]
     types:
       - completed
 
@@ -25,7 +25,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td-ci_cd-f68:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td-cd:latest
 
       # Déploiement sur un serveur distant (si configuré)
       #- name: Deploy to server
@@ -36,10 +36,10 @@ jobs:
       #    username: ${{ secrets.SSH_USER }}
       #    key: ${{ secrets.SSH_KEY }}
       #    script: |
-      #      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td:latest
+      #      docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td-cd:latest
       #      docker stop fastapi || true
       #      docker rm fastapi || true
-      #      docker run -d -p 8000:8000 --name fastapi ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td:latest
+      #      docker run -d -p 8000:8000 --name fastapi ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-td-cd:latest
       #- name: Vérification post-déploiement (smoke test)
       #  run: |
       #   echo "Attente du démarrage de l'application..."
