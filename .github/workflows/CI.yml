@@ -10,8 +10,10 @@ permissions:
   contents: read
 
 jobs:
+
+  # Job 1 : vérification de sécurité
   security:
-    name: safety
+    name: vérification sécurité
     runs-on: ubuntu-24.04
     steps:
       # Récupérer le code
@@ -32,8 +34,9 @@ jobs:
         run: |
           safety check -r app/requirements.txt || true
 
+  # Job 2 : Test
   test:
-    name: Tests et couverture
+    name: Tests FastAPI
     runs-on: ubuntu-24.04
     needs: security
     steps:

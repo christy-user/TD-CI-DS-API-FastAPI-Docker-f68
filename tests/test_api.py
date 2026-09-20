@@ -9,7 +9,6 @@ from app.main import app
 client = TestClient(app)
 
 # 1- Test d'une prédiction correcte
-
 def test_predict_correct ():
     features = [1.0, 2.0, 3.0]
     expected = [2.0, 4.0, 6.0]
@@ -17,9 +16,9 @@ def test_predict_correct ():
     result = predict(features)
 
     assert result == pytest.approx(expected)
+
  
 # 2- test d'une prédiction incorrecte
-
 def test_predict_incorrect():
     features = [1.0, 2.0, 3.0]
     expected = [4.0, 6.0, 8.0]
@@ -29,7 +28,6 @@ def test_predict_incorrect():
     assert result != pytest.approx(expected)
 
 # 3- test d'un JSON incorrect
-
 def test_predict_json_incorrect():
     response = client.post(
         "/predict",
@@ -61,7 +59,7 @@ def test_predict_nominal_cases(features, expected):
 #--------------------------------------------------------------------------------
 
 @pytest.mark.parametrize(
-    "features, expected",
+    "features, expected", 
     [
         ([0.0], [0.0]),
         #([], []),
