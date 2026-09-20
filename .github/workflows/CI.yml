@@ -36,7 +36,7 @@ jobs:
 
   # Job 2 : Test
   test:
-    name: Tests FastAPI
+    name: Tests FastAPI + couverture
     runs-on: ubuntu-24.04
     needs: security
     steps:
