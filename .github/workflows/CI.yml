@@ -125,11 +125,13 @@ jobs:
           load: true 
       - name: Smoke test HTTP 
         run: | 
-          docker run -d -p 8000:8000 --name app app:ci 
-          sleep 5 
+           - name: Smoke test HTTP
+        run: |
+          docker run -d -p 8000:8000 --name app app:ci
+          sleep 5
           curl -f http://localhost:8000/docs
-          curl -f -X POST http://localhost:8000/predict \ 
-            -H "Content-Type: application/json" \ 
+          curl -f -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
             -d '{"features":[0.1,0.2,0.3]}'
       - name: Cleanup 
         if: always() 
