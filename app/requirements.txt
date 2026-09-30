@@ -3,4 +3,6 @@ uvicorn[standard]
 pydantic
 scikit-learn
 pytest
+pytest-cov
 httpx2
+safety
