@@ -129,7 +129,7 @@ jobs:
           sleep 5 
           curl -fsS -X POST http://localhost:8000/predict \ 
             -H "Content-Type: application/json" \ 
-            -d '{"features":[0.0,0.0,0.0]}' >/dev/null
+            -d '{"features":[0.1,0.2,0.3]}' >/dev/null
       - name: Cleanup 
         if: always() 
         run: docker rm -f app || true
