@@ -125,8 +125,6 @@ jobs:
           load: true 
       - name: Smoke test HTTP 
         run: | 
-           - name: Smoke test HTTP
-        run: |
           docker run -d -p 8000:8000 --name app app:ci
           sleep 1
           curl -f http://localhost:8000/docs
