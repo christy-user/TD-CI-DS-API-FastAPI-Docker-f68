@@ -32,8 +32,9 @@ jobs:
           pip install flake8
           flake8 app tests --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 app tests --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
-  test:
+  type-check:
     runs-on: ubuntu-24.04
+    needs: linting
     steps:
       # Runer infos
       - name: Runner infos
@@ -48,6 +49,32 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      # Linting – qualité du code
+      - name: run type checking
+        run: |
+          pip install mypy
+          if [ -f mypy.ini ] || [ -f pyproject.toml ]; then 
+            mypy app tests 
+          else 
+            echo "mypy config absent, étape ignorée" 
+          fi
+  tests:
+    runs-on: ubuntu-24.04
+    needs: [linting, type-check]
+    steps:
+      # Runer infos
+      - name: Runner infos
+        run: |
+          echo "Runner name : $RUNNER_NAME"
+          echo "Runner OS   : $RUNNER_OS"
+      # Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Configurer Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ["3.10", "3.11"]
       # Installer les dépendances dev
       - name: Install dependencies (dev)
         run: |
@@ -58,10 +85,10 @@ jobs:
       - name: Run tests
         run: |
           export PYTHONPATH=$(pwd)
-          pytest --maxfail=1 --disable-warnings -q 
-  safetyScan:
+          pytest --maxfail=1 --disable-warnings -q --cov=app --cov-report=term-missing
+  security:
     runs-on: ubuntu-24.04
-    needs: [test, linting]
+    needs: tests
     steps:
       # Runer infos
       - name: Runner infos
@@ -81,4 +108,29 @@ jobs:
         run: |  
          pip install safety      
          safety check -r app/requirements.txt || true
+  docker-smoke:
+    runs-on: ubuntu-24.04 
+    needs: tests 
+    if: github.event_name == 'push' # Optionnel : seulement sur push pour éviter lenteur PR 
+    steps: 
+      - uses: actions/checkout@v4 
+      - name: Set up Docker Buildx 
+        uses: docker/setup-buildx-action@v3 
+      - name: Build Docker image 
+        uses: docker/build-push-action@v6 
+        with: 
+          context: . 
+          push: false 
+          tags: app:ci 
+          load: true 
+      - name: Smoke test HTTP 
+        run: | 
+          docker run -d -p 8000:8000 --name app app:ci || docker run -d -p 8000:80 --name app app:ci 
+          sleep 5 
+          curl -fsS -X POST http://localhost:8000/predict \ 
+            -H "Content-Type: application/json" \ 
+            -d '{"features":[0.0,0.0,0.0]}' >/dev/null
+      - name: Cleanup 
+        if: always() 
+        run: docker rm -f app || true
          
